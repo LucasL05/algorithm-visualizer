@@ -3,26 +3,37 @@
 
 #define WIDTH 900
 #define HEIGHT 600
+#define GAP 2
+#define MARGIN 16
+#define USABLE_WIDTH (WIDTH - (MARGIN * 2))
 
-#define COUNT 100
+#define COUNT 200
+#if (COUNT * (1 + GAP)) > USABLE_WIDTH
+    #error "FATAL ERROR: Too many bars for this window width."
+#endif
+
 int numbers[COUNT];
 
 void draw_bars() 
-{
-    int gap = 2; // Fixed gap in pixels
+{   
+    /* To get a beautiful, flawless grid, every single slot must be exactly the same width (e.g., exactly 4 pixels), 
+    which means we have to reverse our architecture.
+    Instead of hardcoding a MARGIN of 16 and forcing the bars to stretch into the messy leftover space, 
+    what if we calculate the perfect bar size first (WIDTH / COUNT), 
+    and let the margin absorb the leftover pixels? 
+    How would you write the math to automatically calculate a dynamic margin that centers the perfect grid on the screen?*/
 
     for (int i = 0; i < COUNT; i++) 
     {
-        // STUDY THIS CODE! Using AI is olay sometimes
-        int value = numbers[i];
-        int bar_height = HEIGHT * 0.75 * value / COUNT;
+        int value = numbers[i] + 1;
+        int bar_height = HEIGHT * 0.75 * value / (COUNT +1); // + 1 cause the value of numbers[i] = i + 1, since otherwise the first bar whould have height zero.
 
         // Calculate exact pixel boundaries for current and next bar
-        int x_current = (i * WIDTH) / COUNT;
-        int x_next    = ((i + 1) * WIDTH) / COUNT;
+        int x_current = ((i * USABLE_WIDTH) / COUNT) + MARGIN;
+        int x_next    = (((i + 1) * USABLE_WIDTH) / COUNT) + MARGIN;
 
         // Bar width fills the space between current and next boundary minus the gap
-        int bar_width = (x_next - x_current) - gap;
+        int bar_width = (x_next - x_current) - GAP;
 
         // Prevent negative widths if COUNT is extremely large
         if (bar_width < 1) bar_width = 1;
@@ -45,7 +56,7 @@ int main()
     InitWindow(WIDTH, HEIGHT, "Sorting Visualizer");
     SetTargetFPS(60);
 
-    while (!WindowShouldClose()) 
+    while (!WindowShouldClose())    
     {
         BeginDrawing();
             ClearBackground(BLACK);
