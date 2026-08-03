@@ -1,16 +1,16 @@
 #include <raylib.h>
 #include <stdio.h>
+#include <math.h>
 
 #define WIDTH 900
 #define HEIGHT 600
 #define GAP 2
-#define MARGIN 16
-#define USABLE_WIDTH (WIDTH - (MARGIN * 2))
+// #define MARGIN 16
 
 #define COUNT 200
-#if (COUNT * (1 + GAP)) > USABLE_WIDTH
-    #error "FATAL ERROR: Too many bars for this window width."
-#endif
+// #if (COUNT * (1 + GAP)) > USABLE_WIDTH
+//    #error "FATAL ERROR: Too many bars for this window width."
+// #endif
 
 int numbers[COUNT];
 
@@ -23,6 +23,8 @@ void draw_bars()
     and let the margin absorb the leftover pixels? 
     How would you write the math to automatically calculate a dynamic margin that centers the perfect grid on the screen?*/
 
+    /* def margin as width % (count - margin) = 0
+    maybe it'd also be nice to make margin always be even, but probably not.*/
     for (int i = 0; i < COUNT; i++) 
     {
         int value = numbers[i] + 1;
