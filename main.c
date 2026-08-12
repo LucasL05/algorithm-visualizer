@@ -1,6 +1,8 @@
 #include <raylib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 
 #define WIDTH 900
@@ -9,9 +11,7 @@
 // #define MARGIN 16
 
 #define COUNT 99
-// #if (COUNT * (1 + GAP)) > USABLE_WIDTH
-//    #error "FATAL ERROR: Too many bars for this window width."
-// #endif
+int numbers[COUNT]; // *** This probably shouldn't stay as a global variable
 
 int find_margin()
 {
@@ -25,7 +25,28 @@ int find_margin()
     
 }
 
-int numbers[COUNT];
+void fisher_yates_shuffle()
+{
+    // Randomizes the values in the array.
+    for (int i = COUNT - 1; i >= 0; i--)
+    {
+        int r = rand() % (i + 1);
+        int temp = numbers[i];
+        numbers[i] = numbers[r];
+        numbers[r] = temp;
+    }
+}
+
+void init_numbers() 
+{
+    for (int i = 0; i < COUNT; i++) // "i" should probably be = 1, so that I won't need to add 1 to the hight later on.
+    {
+        numbers[i] = i;
+    }
+
+    fisher_yates_shuffle();
+}
+
 void draw_bars() 
 {   
 /* margin fixed! Now the only thing left to get even rectangles is probably related to the gap. Maybe I should incorporate
@@ -62,9 +83,8 @@ it in the usable_width calculation, but I'm not sure. */
 }
 int main() 
 {
-    for (int i = 0; i < COUNT; i++) {
-        numbers[i] = i;
-    }
+    srand(time(NULL));
+    init_numbers();
 
     InitWindow(WIDTH, HEIGHT, "Sorting Visualizer");
     SetTargetFPS(60);
