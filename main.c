@@ -81,6 +81,13 @@ it in the usable_width calculation, but I'm not sure. */
         );
     }
 }
+
+void quick_sort()
+{
+
+}
+
+
 int main() 
 {
     srand(time(NULL));
