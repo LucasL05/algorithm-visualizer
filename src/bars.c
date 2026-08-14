@@ -33,7 +33,7 @@ void fisher_yates_shuffle(int *numbers, int count)
 int *init_numbers(int count)
 {
     int *numbers = (int*) malloc(count * sizeof(int));
-    for (int i = 0; i < COUNT; i++) // "i" should probably be = 1, so that I won't need to add 1 to the height later on.
+    for (int i = 0; i < count; i++) // "i" should probably be = 1, so that I won't need to add 1 to the height later on.
     {
         numbers[i] = i + 1;
     }
@@ -41,7 +41,7 @@ int *init_numbers(int count)
     return numbers;
 }
 
-void draw_bars(int screen_width, int screen_height, int *numbers)
+void draw_bars(int screen_width, int screen_height, int *numbers, int count)
 {
     /* margin fixed! Now the only thing left to get even rectangles is probably related to the gap. Maybe I should incorporate
     it in the usable_width calculation, but I'm not sure. */
@@ -50,16 +50,16 @@ void draw_bars(int screen_width, int screen_height, int *numbers)
     int margin = find_margin(screen_width);
     int usable_width = screen_width - margin;
 
-    assert(COUNT * (1 + GAP) < usable_width && "ERROR: Too many bars for this window width."); // beware that assert is a no-op when NDEBUG is defined.
+    assert(count * (1 + GAP) < usable_width && "ERROR: Too many bars for this window width."); // beware that assert is a no-op when NDEBUG is defined.
 
-    for (int i = 0; i < COUNT; i++)
+    for (int i = 0; i < count; i++)
     {
         int value = numbers[i]; // there was a +1 here
-        int bar_height = screen_height * 0.65 * value / COUNT;
+        int bar_height = screen_height * 0.65 * value / count;
 
         // Calculate exact pixel boundaries for current and next bar
-        int x_current = (i * usable_width / COUNT) + margin/2;
-        int x_next = ((i + 1) * usable_width / COUNT) + margin/2;
+        int x_current = (i * usable_width / count) + margin/2;
+        int x_next = ((i + 1) * usable_width / count) + margin/2;
 
         // Bar width fills the space between current and next boundary minus the gap
         int bar_width = (x_next - x_current) - GAP;

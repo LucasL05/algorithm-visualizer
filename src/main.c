@@ -11,7 +11,7 @@ int main()
     //initialization
     const int screen_width = 900;
     const int screen_height = 600;
-    const int count = 99;
+    const int count = 100;
 
     srand(time(NULL));
     int *numbers = init_numbers(count);
@@ -21,7 +21,7 @@ int main()
     Screen current_screen = MAIN_MENU;
 
     // TODO: Initialize all required variables and load all required data here!
-    int frames_counter = 0;
+    // int frames_counter = 0;
 
     //SetTargetFPS(60);
 
@@ -61,7 +61,7 @@ int main()
             } break;
             case MERGE_SORT:
             {
-                draw_bars(screen_width, screen_height, numbers);
+                draw_bars(screen_width, screen_height, numbers, count);
             } break;
         }
 

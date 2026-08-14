@@ -1,1 +1,4 @@
 algorithm-visualizer
+visualizer
+visualizer_debug
+*.o
