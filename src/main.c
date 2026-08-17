@@ -59,6 +59,7 @@ int main()
                 DrawText("Main Menu", screen_width/2.5, 20, 40, RAYWHITE);
                 DrawText("Press ENTER or TAP to jump to simulation screen", screen_width/4, 220, 20, RAYWHITE);
             } break;
+            
             case MERGE_SORT:
             {
                 draw_bars(screen_width, screen_height, numbers, count);
