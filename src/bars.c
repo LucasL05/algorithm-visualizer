@@ -1,16 +1,16 @@
 #include <raylib.h>
 #include <stdlib.h>
-#include <assert.h>
+
 
 #include "config.h"
 #include "bars.h"
 
-int find_margin(int screen_width)
+int find_margin(int screen_width, int count)
 {
-    int rest = screen_width % COUNT;
+    int rest = screen_width % count;
 
     if (rest % 2 == 0) return rest;
-    if (COUNT % 2 == 1) return rest + COUNT;
+    if (count % 2 == 1) return rest + count;
     else return 0;
 
     /* Maybe returninig 0 here isn't really the best option, but if rest isn't even
@@ -41,17 +41,8 @@ int *init_numbers(int count)
     return numbers;
 }
 
-void draw_bars(int screen_width, int screen_height, int *numbers, int count)
+void draw_bars(int screen_width, int screen_height, int *numbers, int count, int usable_width, int margin)
 {
-    /* margin fixed! Now the only thing left to get even rectangles is probably related to the gap. Maybe I should incorporate
-    it in the usable_width calculation, but I'm not sure. */
-
-    // Calculate margin and usable width
-    int margin = find_margin(screen_width);
-    int usable_width = screen_width - margin;
-
-    assert(count * (1 + GAP) < usable_width && "ERROR: Too many bars for this window width."); // beware that assert is a no-op when NDEBUG is defined.
-
     for (int i = 0; i < count; i++)
     {
         int value = numbers[i]; // there was a +1 here

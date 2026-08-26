@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
 
 #include "config.h"
 #include "bars.h"
@@ -13,6 +14,12 @@ int main()
     const int screen_height = 600;
     const int count = 100;
 
+        // Calculate margin and usable width
+    int margin = find_margin(screen_width, count);
+    int usable_width = screen_width - margin;
+    assert(count * (1 + GAP) < usable_width && "ERROR: Too many bars for this window width.");
+    //assert is no good here. The program should never crash
+
     srand(time(NULL));
     int *numbers = init_numbers(count);
 
@@ -23,7 +30,7 @@ int main()
     // TODO: Initialize all required variables and load all required data here!
     // int frames_counter = 0;
 
-    //SetTargetFPS(60);
+    SetTargetFPS(60);
 
     // Main loop
     while (!WindowShouldClose()) // Detect Window close button or esc key
@@ -62,7 +69,7 @@ int main()
             
             case MERGE_SORT:
             {
-                draw_bars(screen_width, screen_height, numbers, count);
+                draw_bars(screen_width, screen_height, numbers, count, usable_width, margin);
             } break;
         }
 

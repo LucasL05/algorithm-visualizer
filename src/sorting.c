@@ -1,48 +1,43 @@
+#include <stdlib.h>
+
 #include "sorting.h"
 #include "bars.h"
 
 
-// I mean, this is weird, since I'm not actually mergin anything... should probably check this out later. 
-//                                          !!! Well, well, well lol
+// Notes: This merge sort could become even better by implementing the ping pong optimization.
 
-/* Sorts *numbers[*l*:*j*].
-    l < j and j = l + 1 
-*/
-void merge(int *numbers, int l, int r, int middle) {
-    int temp[r - l + 1]; // this 1 would be necessary if the input was *the array's length**. Then it would be like Python.
+void merge(int *numbers, int *temp, int l, int r, int middle) {
 
     int i = l;
     int j = middle + 1; // this is where the second array starts
     int t_index = 0;  // temporary array's index.
-    while (i <= middle && j <= r) { // This while loop definetly should be a subfunction. I wouldn't even neeed to define j and so on here. I'd be just passing them as parameters and changing their names on the subfuction's header.
+
+    while (i <= middle && j <= r) { 
         if (numbers[i] < numbers[j]) {
             temp[t_index] = numbers[i];
-            i += 1;
+            i ++;
         }
 
         else {
             temp[t_index] = numbers[j];
-            j += 1;
+            j ++;
         }
 
         t_index ++;
     }
 
-    //verifies if some items in some list wasn't seen and inserts them in temp;
-    if (i <= middle) { // this one should also be a subfunction.
-        for (int x = i; i <= middle; x++ ) { // ****Does it make sense to define x as i?
-            temp[t_index] = numbers[x];
-            t_index++;
-        } 
+    //  Appends to *temp* what was left behind in *numbers*[l, r] 
+    if (i <= middle) {
+        for (; i <= middle; i++, t_index++) {
+            temp[t_index] = numbers[i];
+        }
     }
 
-        if (j <= r) { // this one should also be a subfunction.
-        for (int x = i; i <= r; x++ ) { // ****Does it make sense to define x as i?
-            temp[t_index] = numbers[x];
-            t_index++;
-        } 
+    else {
+        for (; j <= r; j++, t_index++) {
+            temp[t_index] = numbers[j];
+        }
     }
-
 
     // r - l +1 is the temp array's size.
     for (int i = 0; i < (r - l + 1); i ++) {
@@ -50,22 +45,29 @@ void merge(int *numbers, int l, int r, int middle) {
     }
 }
 
-// *l* is the left index adn *r* is the right index
+// *l* is the left index and *r* is the right index
 // that contains the sub array to be sorted.
-// - If you'd like to sort the whole array, 
-// insert l = 0 and r = the array's rightmost index.
+// -  the interval [l, r] is inclusive at both sides;
 // - *l* and *r* must be non-negative integers.
-void merge_sort(int *numbers, int l, int r)
+void merge_sort_recursive(int *numbers, int *temp, int l, int r)
 // check if *r* and *l* are positive. 
-// doesn't really work, but it's getting better
+
 {
     if (l < r) {
-        int middle = (l + r) / 2;
-        merge_sort(numbers, l, middle);
-        merge_sort(numbers, middle + 1, r);
-        merge(numbers, l, r, middle); 
+        int middle = l + (r - l) / 2; // It seems that the simpler (l + r) / 2 would cause an overflow with very large integers, so we use that other formula to avoid having to add two big numbers. 
+        merge_sort_recursive(numbers, temp, l, middle);
+        merge_sort_recursive(numbers, temp, middle + 1, r);
+        merge(numbers, temp, l, r, middle); 
     } 
 } 
+
+// call merge_sort_recursive if you only want to sort part of the array
+void merge_sort(int *numbers, int num_length) {
+    int *temp = (int *) malloc(sizeof(int) * num_length);
+    merge_sort_recursive(numbers, temp, 0, num_length - 1);
+    free(temp);
+}
+
 void quick_sort(void)
 {
 }
