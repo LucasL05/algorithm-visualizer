@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
+#include <pthread.h>
 
 #include "config.h"
 #include "bars.h"
@@ -30,7 +31,7 @@ int main()
     // TODO: Initialize all required variables and load all required data here!
     // int frames_counter = 0;
 
-    SetTargetFPS(60);
+    SetTargetFPS(1);
 
     // Main loop
     while (!WindowShouldClose()) // Detect Window close button or esc key
@@ -50,6 +51,7 @@ int main()
             } break;
             case MERGE_SORT:
             {
+                merge_sort(numbers, count);
             } break;
         }
 
@@ -69,6 +71,7 @@ int main()
             
             case MERGE_SORT:
             {
+            
                 draw_bars(screen_width, screen_height, numbers, count, usable_width, margin);
             } break;
         }

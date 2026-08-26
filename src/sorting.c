@@ -39,7 +39,7 @@ void merge(int *numbers, int *temp, int l, int r, int middle) {
         }
     }
 
-    // r - l +1 is the temp array's size.
+    // r - l +1 is the temp array's size that currently being used.
     for (int i = 0; i < (r - l + 1); i ++) {
         numbers[l + i] = temp[i];
     }
