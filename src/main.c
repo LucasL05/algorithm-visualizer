@@ -23,6 +23,12 @@ int main()
 
     srand(time(NULL));
     int *numbers = init_numbers(count);
+    
+    //organizing data to be sent to recursive sorters.
+    NumData num_data = {
+        .numbers = numbers, 
+        .length = count
+    };
 
     InitWindow(screen_width, screen_height, "Sorting Visualizer");
 
@@ -51,7 +57,7 @@ int main()
             } break;
             case MERGE_SORT:
             {
-                merge_sort(numbers, count);
+                merge_sort(&num_data);
             } break;
         }
 

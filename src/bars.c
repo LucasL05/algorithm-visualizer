@@ -1,7 +1,6 @@
 #include <raylib.h>
 #include <stdlib.h>
 
-
 #include "config.h"
 #include "bars.h"
 

@@ -1,7 +1,12 @@
 #ifndef SORTING_H
 #define SORTING_H
 
-void merge_sort(int *numbers, int num_length);
+typedef struct {
+    int *numbers;
+    int length;
+} NumData;
+
+void *merge_sort(void *num_data);
 void quick_sort(void);
 
 #endif // SORTING_H

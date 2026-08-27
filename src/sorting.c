@@ -61,11 +61,19 @@ void merge_sort_recursive(int *numbers, int *temp, int l, int r)
     } 
 } 
 
-// call merge_sort_recursive if you only want to sort part of the array
-void merge_sort(int *numbers, int num_length) {
+// call merge_sort_recursive if you only want to sort part of the array;
+// - returns a void* in order to obey pthread's requirements
+void *merge_sort(void *num_data) {
+    // 
+    NumData *data = (NumData *) num_data;
+    int *numbers = data->numbers;
+    int num_length = data->length;
+
     int *temp = (int *) malloc(sizeof(int) * num_length);
     merge_sort_recursive(numbers, temp, 0, num_length - 1);
     free(temp);
+
+    return NULL;
 }
 
 void quick_sort(void)
