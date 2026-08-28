@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Iinclude
-LDFLAGS = -lraylib
+LDFLAGS = -lraylib -pthread
 
 SRC = src/main.c src/bars.c src/sorting.c
 OUT = visualizer

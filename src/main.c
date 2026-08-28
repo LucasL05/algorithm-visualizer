@@ -24,11 +24,21 @@ int main()
     srand(time(NULL));
     int *numbers = init_numbers(count);
     
+
+    //initializing a thread for recursive sorters ***Maybe I could organize this better later on.
+    //not all functions use recursiveness. Or maybe I could use threads for ewverything. Should 
+    //probably test out their speed. Hmmm. ACtually, it may be better to load everything
+    //before the program starts, just like this
+    pthread_t r_sort;
+    pthread_mutex_t lock;
+
     //organizing data to be sent to recursive sorters.
     NumData num_data = {
         .numbers = numbers, 
-        .length = count
+        .length = count,
+        .lock = lock
     };
+
 
     InitWindow(screen_width, screen_height, "Sorting Visualizer");
 
@@ -37,13 +47,15 @@ int main()
     // TODO: Initialize all required variables and load all required data here!
     // int frames_counter = 0;
 
-    SetTargetFPS(1);
+    SetTargetFPS(240);
 
     // Main loop
+    bool drawing = false;
     while (!WindowShouldClose()) // Detect Window close button or esc key
     {
-        switch (current_screen)
-        {
+        if (!drawing) {
+            switch (current_screen)
+            {
             case MAIN_MENU:
             {
                 // TODO: Update MAIN_MENU screen variables here!
@@ -57,8 +69,10 @@ int main()
             } break;
             case MERGE_SORT:
             {
-                merge_sort(&num_data);
+                pthread_create(&r_sort, NULL, merge_sort, &num_data);
+                drawing = true;
             } break;
+            }
         }
 
         // Draw
@@ -85,6 +99,7 @@ int main()
         EndDrawing();
     }
 
+    pthread_mutex_destroy(&lock); // Should I be doing this before?
     CloseWindow();
     free(numbers);
 }
