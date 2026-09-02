@@ -5,6 +5,7 @@
 #include <pthread.h>
 
 #include "config.h"
+#include "main_menu.h"
 #include "bars.h"
 #include "sorting.h"
 
@@ -39,39 +40,71 @@ int main()
         .lock = lock
     };
 
+    // Initialize main menu's buttons
+
+    ButtonColors colors = {
+        .normal = LIGHTGRAY,
+        .hovered = GRAY,
+        .pressed = DARKGRAY
+    };
+
+    Rectangle btn1_bounds = {screen_width / 2.9, screen_height / 2.5, 300, 80};
+    Button btn1 = {
+        .bounds = btn1_bounds,
+        .state = BTN_NORMAL,
+        .text = "Merge Sort",
+        .colors = colors
+    };
+
+    Rectangle btn2_bounds = {screen_width / 2.9, screen_height / 1.5, 300, 80};
+    Button btn2 = {
+        .bounds = btn2_bounds,
+        .state = BTN_NORMAL,
+        .text = "Quick sort",
+        .colors = colors
+    };
 
     InitWindow(screen_width, screen_height, "Sorting Visualizer");
 
-    Screen current_screen = MAIN_MENU;
+    Screen current_screen = START;
 
     // TODO: Initialize all required variables and load all required data here!
     // int frames_counter = 0;
 
-    SetTargetFPS(240);
+    SetTargetFPS(60);
 
     // Main loop
-    bool drawing = false;
+    bool sorting = false;
     while (!WindowShouldClose()) // Detect Window close button or esc key
     {
-        if (!drawing) {
+        if (!sorting) {
             switch (current_screen)
             {
-            case MAIN_MENU:
-            {
-                // TODO: Update MAIN_MENU screen variables here!
-                //frames_counter++; -> not really necessary to count frames, I guess.
-
-                //press enter to change to MERGE_SORT screen
-                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                case START:
                 {
-                    current_screen = MERGE_SORT;
-                }
-            } break;
-            case MERGE_SORT:
-            {
-                pthread_create(&r_sort, NULL, merge_sort, &num_data);
-                drawing = true;
-            } break;
+                    //frames_counter++; -> not really necessary to count frames, I guess.
+
+                    if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                    {
+                        current_screen = MAIN_MENU;
+                    }
+                } break;
+
+                case MAIN_MENU:
+                {
+                    current_screen = update_main_menu(&btn1, &btn2);
+                } break;
+
+                case MERGE_SORT:
+                {
+                    pthread_create(&r_sort, NULL, merge_sort, &num_data);
+                    sorting = true;
+                } break;
+
+                case QUICK_SORT:
+                {
+
+                } break;
             }
         }
 
@@ -81,18 +114,26 @@ int main()
 
         switch(current_screen)
         {
-            case MAIN_MENU:
+            case START:
             {
                 // TODO: Draw a better menu screen here
-                DrawRectangle(0, 0, screen_width, screen_height, BLACK);
-                DrawText("Main Menu", screen_width/2.5, 20, 40, RAYWHITE);
-                DrawText("Press ENTER or TAP to jump to simulation screen", screen_width/4, 220, 20, RAYWHITE);
+                DrawText("Welcome!", screen_width/3, 20, 80, RAYWHITE);
+                DrawText("Press ENTER or TAP to enter the main menu", screen_width/4, 220, 20, RAYWHITE);
+            } break;
+
+            case MAIN_MENU:
+            {
+                draw_main_menu(screen_width, screen_height, btn1, btn2);
             } break;
             
             case MERGE_SORT:
             {
-            
                 draw_bars(screen_width, screen_height, numbers, count, usable_width, margin);
+            } break;
+
+            case QUICK_SORT:
+            {
+
             } break;
         }
 
