@@ -1,16 +1,19 @@
 #include <raylib.h>
+#include <stdlib.h>
 #include "config.h"
+
 #ifndef MAIN_MENU_H
 #define MAIN_MENU_H
 
 typedef enum {
-    BTN_NORMAL,
+    BTN_IDLE,
+    BTN_HOVER,
     BTN_PRESSED,
-    BTN_HOVER
+    BTN_ACTION
 } ButtonState;
 
 typedef struct {
-    Color normal;
+    Color idle;
     Color hovered;
     Color pressed;
 } ButtonColors;
@@ -18,10 +21,12 @@ typedef struct {
 typedef struct {
     Rectangle bounds;
     ButtonState state;
-    const char *text;
     ButtonColors colors;
+    const char *text;
+    Screen target_screen;
 } Button;
 
-Screen update_main_menu(Button *btn1, Button *btn2);
-void draw_main_menu(int screen_width, int screen_height, Button btn1, Button btn2);
+Screen update_main_menu(Button **buttons, size_t b_length);
+void draw_main_menu(int s_width, int s_height, Button **buttons, size_t b_length);
+
 #endif // MAIN_MENU_H

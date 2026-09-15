@@ -7,10 +7,10 @@
 typedef struct {
     int *numbers;
     int length;
-    pthread_mutex_t lock;
+    pthread_mutex_t *lock;
 } NumData;
 
 void *merge_sort(void *num_data);
-void quick_sort(void);
+void *quick_sort_r(void *num_data);
 
 #endif // SORTING_H

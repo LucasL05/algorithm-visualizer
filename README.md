@@ -1,4 +1,5 @@
 # Algorithm Visualizer
 Implemented algorithms:
 
-Recursive merge sort
+Recursive Merge Sort
+Randomized Quick Sort with Hoare's Partition

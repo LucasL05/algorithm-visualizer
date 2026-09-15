@@ -37,13 +37,13 @@ int main()
     NumData num_data = {
         .numbers = numbers, 
         .length = count,
-        .lock = lock
+        .lock = &lock
     };
 
     // Initialize main menu's buttons
 
     ButtonColors colors = {
-        .normal = LIGHTGRAY,
+        .idle = LIGHTGRAY,
         .hovered = GRAY,
         .pressed = DARKGRAY
     };
@@ -51,18 +51,25 @@ int main()
     Rectangle btn1_bounds = {screen_width / 2.9, screen_height / 2.5, 300, 80};
     Button btn1 = {
         .bounds = btn1_bounds,
-        .state = BTN_NORMAL,
+        .state = BTN_IDLE,
+        .colors = colors,
         .text = "Merge Sort",
-        .colors = colors
+        .target_screen = MERGE_SORT
     };
 
     Rectangle btn2_bounds = {screen_width / 2.9, screen_height / 1.5, 300, 80};
     Button btn2 = {
         .bounds = btn2_bounds,
-        .state = BTN_NORMAL,
+        .state = BTN_IDLE,
+        .colors = colors,
         .text = "Quick sort",
-        .colors = colors
+        .target_screen = QUICK_SORT
     };
+
+    Button *buttons[2];
+    buttons[0] = &btn1;
+    buttons[1] = &btn2;
+  
 
     InitWindow(screen_width, screen_height, "Sorting Visualizer");
 
@@ -92,7 +99,7 @@ int main()
 
                 case MAIN_MENU:
                 {
-                    current_screen = update_main_menu(&btn1, &btn2);
+                    current_screen = update_main_menu(buttons, 2);
                 } break;
 
                 case MERGE_SORT:
@@ -104,7 +111,9 @@ int main()
 
                 case QUICK_SORT:
                 {
-
+                    pthread_mutex_init(&lock, NULL);
+                    pthread_create(&r_sort, NULL, quick_sort_r, &num_data);
+                    sorting = true;
                 } break;
             }
         }
@@ -124,7 +133,7 @@ int main()
 
             case MAIN_MENU:
             {
-                draw_main_menu(screen_width, screen_height, btn1, btn2);
+                draw_main_menu(screen_width, screen_height, buttons, 2);
             } break;
             
             case MERGE_SORT:
@@ -134,7 +143,7 @@ int main()
 
             case QUICK_SORT:
             {
-
+                draw_bars(screen_width, screen_height, numbers, count, usable_width, margin);
             } break;
         }
 
