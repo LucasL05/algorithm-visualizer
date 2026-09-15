@@ -3,7 +3,7 @@
 #include <time.h>
 #include <assert.h>
 #include <pthread.h>
-
+// I can definetly keep *numbers* for now, but I think arr would be a much better name
 #include "config.h"
 #include "main_menu.h"
 #include "bars.h"
@@ -97,6 +97,7 @@ int main()
 
                 case MERGE_SORT:
                 {
+                    pthread_mutex_init(&lock, NULL);
                     pthread_create(&r_sort, NULL, merge_sort, &num_data);
                     sorting = true;
                 } break;

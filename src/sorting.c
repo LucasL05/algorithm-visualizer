@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <time.h>
 
+// Definetly should add a specs tab for every algorithm
 #include "sorting.h"
 #include "bars.h"
 
@@ -83,8 +84,6 @@ void *merge_sort(void *num_data) {
     int *numbers = data->numbers;
     int num_length = data->length;
     pthread_mutex_t lock = data->lock;
-    pthread_mutex_init(&lock, NULL);
-
 
     int *temp = (int *) malloc(sizeof(int) * num_length);
     merge_sort_recursive(numbers, temp, 0, num_length - 1, lock);
@@ -93,6 +92,75 @@ void *merge_sort(void *num_data) {
     return NULL;
 }
 
-void quick_sort(void)
+// ** Hoare's Partition **
+// returns an index of *numbers* so that all values
+// on its left are smaller than *p* 
+// and all values on its right are greater than it
+int partition(int *numbers, int p, int r)
 {
+    while (true) 
+    {
+        pivot = numbers[p];
+        i = p
+        j = r
+
+        // The CLRS algorithm would use a do/while, i=p-1 and j=r+1. Not sure if my version isn't any worse.
+        while (numbers[j] > pivot) 
+        {
+            j--;
+        }
+        while (numbers[i] < pivot) 
+        {
+            i++;
+        }
+
+        if (i < j) 
+        {
+            int temp = numbers[i];
+            numbers[i] = numbers[j];
+            numbers[j] = temp;
+        }
+        else 
+        {
+            return j;
+        }
+    }
+
+}
+
+// returns an index of *numbers* so that all values 
+// on its left are smaller than a random pivot
+// and all values on its right are greater than 
+// that same pivot
+int partition_r(int *numbers, int p, int r) 
+{
+    // srand is the same at main and it's the same for the whole application.
+    // I hope that won't cause any problems.
+    int r = rand() % r;
+    int temp = numbers[p];
+    numbers[p] = numbers[r];
+    numbers[r] = temp;
+    return partition(numbers, p, r);
+}
+// *numbers* is the array to be sorted;
+// *p* -> pivot (that's also the leftmost index);
+// *r* -> rightmost index.
+void quick_sort_r_recursive(int *numbers, int p, int r) 
+{
+    if (p < r) {
+        q = partition_r(numbers, p, r);
+    }
+}
+
+// Quick sort with random pivot
+void *quick_sort_r(void num_data*)
+{
+    NumData *data = (NumData *) num_data;
+    int *numbers = data->numbers;
+    int num_length = data->length;
+    pthread_mutex_t lock = data->lock;
+
+    quick_sort_r_recursive(numbers, 0, num_length - 1);
+    return NULL;
+
 }
