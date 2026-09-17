@@ -6,6 +6,9 @@
 // Definetly should add a specs tab for every algorithm
 #include "sorting.h"
 #include "bars.h"
+#include "main_menu.h"
+#include "config.h"
+#include "screen.h"
 
 // 1000 mseconds = 1 second
 void delay_ms(int milisseconds) {
@@ -172,5 +175,17 @@ void *quick_sort_r(void *num_data)
 
     quick_sort_r_recursive(numbers, 0, num_length - 1, lock);
     return NULL;
+
+}
+
+// sc = sorting screen
+void draw_sc(int screen_width, int screen_height, int *numbers, int count, int usable_width, int margin, Button **buttons, size_t b_length) 
+{
+    draw_bars(screen_width, screen_height, numbers, count, usable_width, margin);
+
+    for (int i = 0; i < b_length; i++)
+    {
+        draw_button(buttons[i]);
+    }
 
 }
