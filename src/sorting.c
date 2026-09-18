@@ -33,6 +33,7 @@ void merge(Bar *bars, Bar *temp, int l, int r, int middle, pthread_mutex_t *lock
         bars[i].state = COMPARED;
         bars[j].state = COMPARED;
         pthread_mutex_unlock(lock);
+        delay_ms(delay);
 
         if (bars[i].value < bars[j].value) {
             temp[t_index] = bars[i];
@@ -120,6 +121,7 @@ int partition(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
             pthread_mutex_lock(lock);
             bars[j].state = COMPARED;
             pthread_mutex_unlock(lock);
+            delay_ms(delay * 2);
         } while(bars[j].value > pivot.value);
 
         do {
@@ -127,11 +129,13 @@ int partition(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
             pthread_mutex_lock(lock);
             bars[i].state = COMPARED;
             pthread_mutex_unlock(lock);
+            delay_ms(delay * 2);
         } while(bars[i].value < pivot.value);
 
         pthread_mutex_lock(lock);
         pivot.state = COMPARED;
         pthread_mutex_unlock(lock);
+        delay_ms(delay);
 
         if (i < j) 
         {
@@ -144,9 +148,6 @@ int partition(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
             bars[i].state = MOVED;
             bars[j].state = MOVED;
             pthread_mutex_unlock(lock);
-
-            bars[i].state = MOVED;
-            bars[j].state = MOVED;
             delay_ms(delay);
         }
         else 
@@ -174,6 +175,7 @@ int partition_r(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
     bars[p].state = MOVED;
     bars[i].state = MOVED;
     pthread_mutex_unlock(lock);
+    delay_ms(delay);
     return partition(bars, p, r, lock, delay);
 }
 

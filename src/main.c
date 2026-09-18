@@ -17,7 +17,7 @@ int main()
     // Initialize all required variables and load all required data here!
     const int screen_width = 900;
     const int screen_height = 600;
-    const int count = 100;
+    const int count = 20;
 
         // Calculate margin and usable width
     int margin = find_margin(screen_width, count);
