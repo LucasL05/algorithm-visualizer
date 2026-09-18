@@ -3,6 +3,7 @@
 #include <time.h> //bars --> bars
 #include <stdio.h>
 
+
 // Definetly should add a specs tab for every algorithm
 #include "sorting.h"
 #include "bars.h"
@@ -22,7 +23,9 @@ void delay_ms(int milisseconds) {
 
 // Notes: This merge sort could become even better by implementing the ping pong optimization.
 
-void merge(Bar *bars, Bar *temp, int l, int r, int middle, pthread_mutex_t *lock, int delay) {
+void merge(Bar *bars, Bar *temp, int l, int r, int middle, pthread_mutex_t *lock, int delay, atomic_bool *stop_requested) {
+
+    if (atomic_load(stop_requested)) return;
 
     int i = l;
     int j = middle + 1; // this is where the second array starts
@@ -33,7 +36,8 @@ void merge(Bar *bars, Bar *temp, int l, int r, int middle, pthread_mutex_t *lock
         bars[i].state = COMPARED;
         bars[j].state = COMPARED;
         pthread_mutex_unlock(lock);
-        delay_ms(delay);
+
+        if (!atomic_load(stop_requested)) delay_ms(delay * 2);
 
         if (bars[i].value < bars[j].value) {
             temp[t_index] = bars[i];
@@ -66,7 +70,7 @@ void merge(Bar *bars, Bar *temp, int l, int r, int middle, pthread_mutex_t *lock
         bars[l + i] = temp[i];
         bars[l + i].state = MOVED;
         pthread_mutex_unlock(lock);
-        delay_ms(delay);
+        if (!atomic_load(stop_requested)) delay_ms(delay);
     }
 }
 
@@ -74,30 +78,33 @@ void merge(Bar *bars, Bar *temp, int l, int r, int middle, pthread_mutex_t *lock
 // that contains the sub array to be sorted.
 // -  the interval [l, r] is inclusive at both sides;
 // - *l* and *r* must be non-negative integers.
-void merge_sort_recursive(Bar *bars, Bar *temp, int l, int r, pthread_mutex_t *lock, int delay)
-// check if *r* and *l* are positive. 
-
+// - Cleanly stops if *stop_requested* == true.
+void merge_sort_recursive(Bar *bars, Bar *temp, int l, int r, pthread_mutex_t *lock, int delay, atomic_bool *stop_requested)
+// check if *r* and *l* are positive. Maybe ******** 
 {
+    if (atomic_load(stop_requested)) return;
+
     if (l < r) {
-        int middle = l + (r - l) / 2; // It seems that the simpler (l + r) / 2 would cause an overflow with very large integers, so we use that other formula to avoid having to add two big bars. 
-        merge_sort_recursive(bars, temp, l, middle, lock, delay);
-        merge_sort_recursive(bars, temp, middle + 1, r, lock, delay);
-        merge(bars, temp, l, r, middle, lock, delay); 
+        int middle = l + (r - l) / 2; // It seems that the simpler (l + r) / 2 would cause an overflow with very large integers, so we use that other formula to avoid having to add two large indexes. 
+        merge_sort_recursive(bars, temp, l, middle, lock, delay, stop_requested);
+        merge_sort_recursive(bars, temp, middle + 1, r, lock, delay, stop_requested);
+        merge(bars, temp, l, r, middle, lock, delay, stop_requested); 
     } 
 } 
 
 // call merge_sort_recursive if you only want to sort part of the array;
 // - returns a void* in order to conform to pthread's requirements
-void *merge_sort(void *bars_data) {
+void *merge_sort(void *sorter_data) {
     // 
-    BarsData *data = (BarsData *) bars_data;
+    SorterData *data = (SorterData *) sorter_data;
     Bar *bars = data->bars;
     int bars_length = data->length;
     pthread_mutex_t *lock = data->lock;
     int delay = 2000 / bars_length;
+    atomic_bool *stop_requested = data->stop_requested;
 
     Bar *temp = (Bar *) malloc(sizeof(Bar) * bars_length);
-    merge_sort_recursive(bars, temp, 0, bars_length - 1, lock, delay);
+    merge_sort_recursive(bars, temp, 0, bars_length - 1, lock, delay, stop_requested);
     free(temp);
 
     return NULL;
@@ -107,7 +114,7 @@ void *merge_sort(void *bars_data) {
 // returns an index of *bars* so that all values
 // on its left are smaller than *p* 
 // and all values on its right are greater than it
-int partition(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
+int partition(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay, atomic_bool *stop_requested)
 {
     Bar pivot = bars[p];
     int i = p - 1;
@@ -121,7 +128,7 @@ int partition(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
             pthread_mutex_lock(lock);
             bars[j].state = COMPARED;
             pthread_mutex_unlock(lock);
-            delay_ms(delay * 2);
+            if (!atomic_load(stop_requested)) delay_ms(delay);
         } while(bars[j].value > pivot.value);
 
         do {
@@ -129,13 +136,13 @@ int partition(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
             pthread_mutex_lock(lock);
             bars[i].state = COMPARED;
             pthread_mutex_unlock(lock);
-            delay_ms(delay * 2);
+            if (!atomic_load(stop_requested)) delay_ms(delay);
         } while(bars[i].value < pivot.value);
 
         pthread_mutex_lock(lock);
         pivot.state = COMPARED;
         pthread_mutex_unlock(lock);
-        delay_ms(delay);
+        if (!atomic_load(stop_requested)) delay_ms(delay);
 
         if (i < j) 
         {
@@ -148,7 +155,7 @@ int partition(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
             bars[i].state = MOVED;
             bars[j].state = MOVED;
             pthread_mutex_unlock(lock);
-            delay_ms(delay);
+            if (!atomic_load(stop_requested)) delay_ms(delay);
         }
         else 
         {
@@ -156,10 +163,10 @@ int partition(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
         }
     }
 
-}  // I guess that I should always lock the main thread when I'm changing a bar's state
+}
 
 // Partiton with random pivot
-int partition_r(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
+int partition_r(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay, atomic_bool *stop_requested)
     // srand is the same in main and it's the same for the whole program.
     // I hope that won't cause any problems. 
 {
@@ -175,32 +182,35 @@ int partition_r(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay)
     bars[p].state = MOVED;
     bars[i].state = MOVED;
     pthread_mutex_unlock(lock);
-    delay_ms(delay);
-    return partition(bars, p, r, lock, delay);
+    if (!atomic_load(stop_requested)) delay_ms(delay);
+    return partition(bars, p, r, lock, delay, stop_requested);
 }
 
 // *bars* is the array to be sorted;
 // *p* -> pivot (that's also the leftmost index);
 // *r* -> rightmost index.
-void quick_sort_r_recursive(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay) 
+void quick_sort_r_recursive(Bar *bars, int p, int r, pthread_mutex_t *lock, int delay, atomic_bool *stop_requested) 
 {
+    if (atomic_load(stop_requested)) return;
+
     if (p < r) {
-        int q = partition_r(bars, p, r, lock, delay);
-        quick_sort_r_recursive(bars, p, q, lock, delay);
-        quick_sort_r_recursive(bars, q + 1, r, lock, delay);
+        int q = partition_r(bars, p, r, lock, delay, stop_requested);
+        quick_sort_r_recursive(bars, p, q, lock, delay, stop_requested);
+        quick_sort_r_recursive(bars, q + 1, r, lock, delay, stop_requested);
     }
 }
 
 // Quick sort with random pivot
-void *quick_sort_r(void *bars_data)
+void *quick_sort_r(void *sorter_data)
 {
-    BarsData *data = (BarsData *) bars_data;
+    SorterData *data = (SorterData *) sorter_data;
     Bar *bars = data->bars;
     int bars_length = data->length;
     pthread_mutex_t *lock = data->lock;
-    int delay = 3000 / bars_length; // In milisseconds
+    int delay = 1500 / bars_length; // In milisseconds
+    atomic_bool *stop_requested = data->stop_requested;
 
-    quick_sort_r_recursive(bars, 0, bars_length - 1, lock, delay);
+    quick_sort_r_recursive(bars, 0, bars_length - 1, lock, delay, stop_requested);
     return NULL;
 
 }
@@ -215,4 +225,12 @@ void draw_sc(int screen_width, int screen_height, Bar *bars, int count, int usab
         draw_button(buttons[i]);
     }
 
+}
+
+void stop_sorting(pthread_t r_sort, atomic_bool *stop_requested, Bar *bars, int count)
+{
+    atomic_store(stop_requested, true);
+    pthread_join(r_sort, NULL);
+    fisher_yates_shuffle(bars, count);
+    atomic_store(stop_requested, false);
 }

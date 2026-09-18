@@ -1,8 +1,10 @@
 #include <raylib.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include <assert.h>
 #include <pthread.h>
+#include <stdatomic.h>
 // I can definetly keep *numbers* for now, but I think arr would be a much better name
 #include "config.h"
 #include "main_menu.h"
@@ -35,12 +37,16 @@ int main()
     //before the program starts, just like this
     pthread_t r_sort;
     pthread_mutex_t lock;
+    pthread_mutex_init(&lock, NULL);
+    atomic_bool stop_requested;
+    atomic_init(&stop_requested, false);
 
-    //organizing data to be sent to recursive sorters.
-    BarsData bars_data = {
+    //organizing data to be sent to sorters.
+    SorterData sorter_data = {
         .bars = bars, 
         .length = count,
-        .lock = &lock
+        .lock = &lock,
+        .stop_requested = &stop_requested
     };
 
     ButtonColors colors = {
@@ -148,26 +154,37 @@ int main()
 
             case MERGE_SORT:
             {
-                current_screen = update_screen(buttons_sc, 1, MERGE_SORT);
-
                 if (!sorting)
                 {
-                    pthread_mutex_init(&lock, NULL);
-                    pthread_create(&r_sort, NULL, merge_sort, &bars_data);
+                    pthread_create(&r_sort, NULL, merge_sort, &sorter_data);
                     sorting = true;
-                } // FIND A WAY TO STOP THE SORTING IF THE SCREEN CHANGES
+                    printf("hellooo *********************** \n");
+                } 
+
+                current_screen = update_screen(buttons_sc, 1, MERGE_SORT);
+
+                if (current_screen != MERGE_SORT) 
+                { 
+                    stop_sorting(r_sort, &stop_requested, bars, count);
+                    sorting = false;
+                }
                 
             } break;
 
             case QUICK_SORT:
             {
-                current_screen = update_screen(buttons_sc, 1, QUICK_SORT);
-
                 if (!sorting) 
                 {
-                    pthread_mutex_init(&lock, NULL);
-                    pthread_create(&r_sort, NULL, quick_sort_r, &bars_data);
+                    pthread_create(&r_sort, NULL, quick_sort_r, &sorter_data);
                     sorting = true;
+                }
+                
+                current_screen = update_screen(buttons_sc, 1, QUICK_SORT);
+
+                if (current_screen != QUICK_SORT) 
+                {
+                    stop_sorting(r_sort, &stop_requested, bars, count);
+                    sorting = false;
                 }
                 
             } break;

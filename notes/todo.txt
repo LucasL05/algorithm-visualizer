@@ -1,9 +1,11 @@
 TODO next:
 
-1 Fix return to main menu from sorting screen feature (The sorting process keeps happening, but behind the scenes);
+- Fix return to main menu from sorting screen feature (The sorting process keeps happening, but behind the scenes);
+- Do a Valgrind check-up; 
 - Add bubble sort;
 - Add Heapsort;
 - Improve user menu;
+- Enable full screen option;
 - Add a teaching tab (it can totally be just a simpe pseudocode of the selected algorithm for now);
 - Introduce data structures?
 
