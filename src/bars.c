@@ -1,8 +1,10 @@
 #include <raylib.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "config.h"
 #include "bars.h"
+#include "sorting.h"
 
 int find_margin(int screen_width, int count)
 {
@@ -17,34 +19,35 @@ int find_margin(int screen_width, int count)
     Maybe there's a way if I change the bar's width algorithm, but that may be complicated. */
 }
 
-void fisher_yates_shuffle(int *numbers, int count)
+void fisher_yates_shuffle(Bar *bars, int count)
 {
     // Randomizes the values in the array.
     for (int i = count - 1; i >= 0; i--)
     {
         int r = rand() % (i + 1);
-        int temp = numbers[i];
-        numbers[i] = numbers[r];
-        numbers[r] = temp;
+        Bar temp = bars[i];
+        bars[i] = bars[r];
+        bars[r] = temp;
     }
 }
 
-int *init_numbers(int count)
+Bar *init_bars(int count)
 {
-    int *numbers = (int*) malloc(count * sizeof(int));
-    for (int i = 0; i < count; i++) // "i" should probably be = 1, so that I won't need to add 1 to the height later on.
+    Bar *bars = (Bar*) malloc(count * sizeof(Bar));
+    for (int i = 0; i < count; i++)
     {
-        numbers[i] = i + 1;
+        bars[i].value = i + 1;
+        bars[i].state = IDLE;
     }
-    fisher_yates_shuffle(numbers, count);
-    return numbers;
+    fisher_yates_shuffle(bars, count);
+    return bars;
 }
 
-void draw_bars(int screen_width, int screen_height, int *numbers, int count, int usable_width, int margin)
+void draw_bars(int screen_width, int screen_height, Bar *bars, int count, int usable_width, int margin)
 {
     for (int i = 0; i < count; i++)
     {
-        int value = numbers[i]; // there was a +1 here
+        int value = bars[i].value; // there was a +1 here
         int bar_height = screen_height * 0.65 * value / count;
 
         // Calculate exact pixel boundaries for current and next bar
@@ -57,12 +60,55 @@ void draw_bars(int screen_width, int screen_height, int *numbers, int count, int
         // Prevent negative widths if COUNT is extremely large
         if (bar_width < 1) bar_width = 1;
 
-        DrawRectangle(
-            x_current,
-            screen_height * 0.75 - bar_height,
-            bar_width,
-            bar_height,
-            WHITE
-        );
+        if (i == value - 1) bars[i].state = SETTLED;
+
+        switch(bars[i].state) {
+            case IDLE:
+            {
+                DrawRectangle(
+                    x_current,
+                    screen_height * 0.75 - bar_height,
+                    bar_width,
+                    bar_height,
+                    WHITE
+                );
+            } break;
+
+            case COMPARED:
+            {
+                DrawRectangle(
+                    x_current,
+                    screen_height * 0.75 - bar_height,
+                    bar_width,
+                    bar_height,
+                    YELLOW
+                );
+            } break;
+
+            case MOVED:
+            {
+                DrawRectangle(
+                    x_current,
+                    screen_height * 0.75 - bar_height,
+                    bar_width,
+                    bar_height,
+                    RED
+                );
+            } break;
+
+            case SETTLED:
+            {
+                DrawRectangle(
+                    x_current,
+                    screen_height * 0.75 - bar_height,
+                    bar_width,
+                    bar_height,
+                    GREEN
+                );
+            } break;
+        }
+        // reset bar to idle state
+        bars[i].state = IDLE;
+
     }
 }

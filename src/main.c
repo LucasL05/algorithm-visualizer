@@ -26,7 +26,7 @@ int main()
     //assert is no good here. The program should never crash
 
     srand(time(NULL));
-    int *numbers = init_numbers(count);
+    Bar *bars = init_bars(count);
     
 
     //initializing a thread for recursive sorters ***Maybe I could organize this better later on.
@@ -37,8 +37,8 @@ int main()
     pthread_mutex_t lock;
 
     //organizing data to be sent to recursive sorters.
-    NumData num_data = {
-        .numbers = numbers, 
+    BarsData bars_data = {
+        .bars = bars, 
         .length = count,
         .lock = &lock
     };
@@ -153,7 +153,7 @@ int main()
                 if (!sorting)
                 {
                     pthread_mutex_init(&lock, NULL);
-                    pthread_create(&r_sort, NULL, merge_sort, &num_data);
+                    pthread_create(&r_sort, NULL, merge_sort, &bars_data);
                     sorting = true;
                 } // FIND A WAY TO STOP THE SORTING IF THE SCREEN CHANGES
                 
@@ -166,7 +166,7 @@ int main()
                 if (!sorting) 
                 {
                     pthread_mutex_init(&lock, NULL);
-                    pthread_create(&r_sort, NULL, quick_sort_r, &num_data);
+                    pthread_create(&r_sort, NULL, quick_sort_r, &bars_data);
                     sorting = true;
                 }
                 
@@ -193,12 +193,12 @@ int main()
             
             case MERGE_SORT:
             {   // Merge sort == quick sort. Maybe I should merge both in the future? Like draw_sorting.
-                draw_sc(screen_width, screen_height, numbers, count, usable_width, margin, buttons_sc, 1);
+                draw_sc(screen_width, screen_height, bars, count, usable_width, margin, buttons_sc, 1);
             } break;
 
             case QUICK_SORT:
             {
-                draw_sc(screen_width, screen_height, numbers, count, usable_width, margin, buttons_sc, 1);
+                draw_sc(screen_width, screen_height, bars, count, usable_width, margin, buttons_sc, 1);
             } break;
         }
 
@@ -207,6 +207,6 @@ int main()
     }
 
     pthread_mutex_destroy(&lock); // Should I be doing this before?
-    free(numbers);
+    free(bars);
     CloseWindow();
 }
