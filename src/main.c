@@ -19,7 +19,7 @@ int main()
     // Initialize all required variables and load all required data here!
     const int screen_width = 900;
     const int screen_height = 600;
-    const int count = 20;
+    const int count = 100;
 
         // Calculate margin and usable width
     int margin = find_margin(screen_width, count);
@@ -158,7 +158,6 @@ int main()
                 {
                     pthread_create(&r_sort, NULL, merge_sort, &sorter_data);
                     sorting = true;
-                    printf("hellooo *********************** \n");
                 } 
 
                 current_screen = update_screen(buttons_sc, 1, MERGE_SORT);

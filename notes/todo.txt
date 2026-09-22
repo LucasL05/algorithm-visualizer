@@ -1,17 +1,19 @@
 TODO next:
 
-- Fix return to main menu from sorting screen feature (The sorting process keeps happening, but behind the scenes);
 - Do a Valgrind check-up; 
-- Add bubble sort;
-- Add Heapsort;
 - Improve user menu;
+- Add Heapsort;
+- Add bubble sort;
 - Enable full screen option;
 - Add a teaching tab (it can totally be just a simpe pseudocode of the selected algorithm for now);
 - Introduce data structures?
+- Introduce greedy algorithms?
 
 
 TODO eventually:
 
 - Make the visualization of smaller bar arrays clearer. Bars should stay yellow for longer. All moved bars were first
 compared, but the visualizer usually skips that part and turn them red straight up. This isn't important for big bar arrays though,
-since that would make their sorting process too slow and tedious. But
+since that would make their sorting process too slow and tedious;
+
+- I'd like the return to last screen feature to be quicker.

@@ -1,0 +1,4 @@
+# Suppress memory leaks from Raylib and graphics drivers
+leak:libraylib.so
+leak:libGL.so
+leak:mesa
