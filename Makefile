@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS = -Wall -Iinclude -O2
 LDFLAGS = -lraylib -pthread
 
-SRC = src/main.c src/bars.c src/sorting.c src/main_menu.c src/screen.c
+SRC = src/main.c src/bars.c src/sorting.c src/menus.c src/screen.c
 OUT = visualizer
 
 # Optimized Valgrind profile (skips undef-value tracking to reduce GUI loop lag)

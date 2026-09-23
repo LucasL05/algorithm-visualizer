@@ -7,7 +7,7 @@
 // Definetly should add a specs tab for every algorithm
 #include "sorting.h"
 #include "bars.h"
-#include "main_menu.h"
+#include "menus.h"
 #include "config.h"
 #include "screen.h"
 

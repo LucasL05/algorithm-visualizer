@@ -7,7 +7,7 @@
 #include <stdatomic.h>
 // I can definetly keep *numbers* for now, but I think arr would be a much better name
 #include "config.h"
-#include "main_menu.h"
+#include "menus.h"
 #include "bars.h"
 #include "sorting.h"
 #include "screen.h"
@@ -79,9 +79,21 @@ int main()
     // Having a "initialize_main_menu()" umbrella function
     // would make things much tidier, but then I'd need to
     // use more heap memory, I think
+    Rectangle btn_sm_bounds = {screen_width / 2.9, screen_height / 3, 300, 80};
+    Button btn_sm = {
+        .bounds = btn_sm_bounds,
+        .state = BTN_IDLE,
+        .colors = colors,
+        .text = "Sorting Menu",
+        .action = {
+            .type = CHANGE_SCREEN,
+            .data.target_screen = SORTING_MENU
+        }
+    };
+
     bool exitWindowRequested = false;
-    Rectangle btn_ext_bounds = {screen_width / 2.9, screen_height / 1.4, 300, 80};
-    Button btn_ext= {
+    Rectangle btn_ext_bounds = {screen_width / 2.9, screen_height / 1.92, 300, 80};
+    Button btn_ext = {
         .bounds = btn_ext_bounds,
         .state = BTN_IDLE,
         .colors = colors,
@@ -103,7 +115,7 @@ int main()
             .data.target_screen = MERGE_SORT
         }
     };
-    // I should probably change these button's names later on 
+
     Rectangle btn_qs_bounds = {screen_width / 2.9, screen_height / 1.92, 300, 80};
     Button btn_qs = {
         .bounds = btn_qs_bounds,
@@ -117,14 +129,19 @@ int main()
     };
 
     // Packing main menu buttons
-    Button *buttons_mm[3]; 
+    Button *buttons_mm[2];
     buttons_mm[0] = &btn_ext;
-    buttons_mm[1] = &btn_ms;
-    buttons_mm[2] = &btn_qs;
+    buttons_mm[1] = &btn_sm;
+
+    // Packing sorting menu buttons
+    Button *buttons_sm[3];
+    buttons_sm[0] = &btn_mm;
+    buttons_sm[1] = &btn_ms;
+    buttons_sm[2] = &btn_qs;
   
     // Packing sorting screen buttons
     Button *buttons_sc[1];
-    buttons_sc[0] = &btn_mm;
+    buttons_sc[0] = &btn_sm;
 
     InitWindow(screen_width, screen_height, "Alogrithm Visualizer");
     Screen current_screen = START;
@@ -149,7 +166,12 @@ int main()
 
             case MAIN_MENU:
             {
-                current_screen = update_screen(buttons_mm, 3, MAIN_MENU);
+                current_screen = update_screen(buttons_mm, 2, MAIN_MENU);
+            } break;
+
+            case SORTING_MENU:
+            {
+                current_screen = update_screen(buttons_sm, 3, SORTING_MENU);
             } break;
 
             case MERGE_SORT:
@@ -204,7 +226,12 @@ int main()
 
             case MAIN_MENU:
             {    // Maybe a union struct buttons and length would be better?
-                draw_main_menu(screen_width, screen_height, buttons_mm, 3);
+                draw_menu(screen_width, screen_height, buttons_mm, 2, "Main Menu");
+            } break;
+
+            case SORTING_MENU:
+            {
+                draw_menu(screen_width, screen_height, buttons_sm, 3, "SORTING MENU");
             } break;
             
             case MERGE_SORT:

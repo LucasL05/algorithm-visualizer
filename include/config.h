@@ -8,7 +8,8 @@
 
 typedef enum { 
     START, 
-    MAIN_MENU, 
+    MAIN_MENU,
+    SORTING_MENU, 
     MERGE_SORT, 
     QUICK_SORT
 } Screen;
