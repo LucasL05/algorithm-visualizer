@@ -79,7 +79,7 @@ int main()
 
     Button btns_sorting_menu[3];
     ButtonSpec specs_sorting_menu[3];
-    specs_sorting_menu[1] = (ButtonSpec)
+    specs_sorting_menu[0] = (ButtonSpec)
     {
         .btn_action =
         {
@@ -146,12 +146,12 @@ int main()
 
             case MAIN_MENU:
             {
-                current_screen = update_screen(&btns_main_menu, 2, MAIN_MENU);
+                current_screen = update_screen(btns_main_menu, 2, MAIN_MENU);
             } break;
 
             case SORTING_MENU:
             {
-                current_screen = update_screen(&btns_sorting_menu, 3, SORTING_MENU);
+                current_screen = update_screen(btns_sorting_menu, 3, SORTING_MENU);
             } break;
 
             case MERGE_SORT:
@@ -162,7 +162,7 @@ int main()
                     sorting = true;
                 } 
 
-                current_screen = update_screen(&btns_sorting_screens, 1, MERGE_SORT);
+                current_screen = update_screen(btns_sorting_screens, 1, MERGE_SORT);
 
                 if (current_screen != MERGE_SORT) 
                 { 
@@ -206,22 +206,22 @@ int main()
 
             case MAIN_MENU:
             {    // Maybe a union struct buttons and length would be better?
-                draw_menu(screen_width, screen_height, btns_main_menu, 2, "Main Menu");
+                draw_menu(w_dimensions, btns_main_menu, 2, "Main Menu");
             } break;
 
             case SORTING_MENU:
             {
-                draw_menu(screen_width, screen_height, btns_sorting_menu, 3, "SORTING MENU");
+                draw_menu(w_dimensions, btns_sorting_menu, 3, "SORTING MENU");
             } break;
             
             case MERGE_SORT:
             {   // Merge sort == quick sort. Maybe I should merge both in the future? Like draw_sorting.
-                draw_sc(screen_width, screen_height, bars, count, usable_width, margin, btns_sorting_screens, 1);
+                draw_sc(w_dimensions, bars, count, usable_width, margin, btns_sorting_screens, 1);
             } break;
 
             case QUICK_SORT:
             {
-                draw_sc(screen_width, screen_height, bars, count, usable_width, margin, btns_sorting_screens, 1);
+                draw_sc(w_dimensions, bars, count, usable_width, margin, btns_sorting_screens, 1);
             } break;
         }
 

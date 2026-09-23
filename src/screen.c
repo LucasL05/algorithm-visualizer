@@ -32,22 +32,23 @@ Button generate_ret_button(ButtonSpec specs, WindowDimensions w_dimensions)
 
 Rectangle generate_std_btn_bounds(size_t btn_index, size_t screen_btn_count, WindowDimensions w_dimensions)
 {
+
     Rectangle bounds;
     // The other 5% are occupied by the title. 
-    // The only button there will be "<--", that is defined at generate_return_button()
-    double usable_height = w_dimensions.height * 0.95;
-    double btn_height = btn_index * (usable_height / 3);
+    int btn_height = 80;
+    int btn_y = btn_index * (w_dimensions.height - btn_height) / 3;
 
     // Position buttons in a single, centralized column.
     if (screen_btn_count <= 3)
     {
-        double btn_width = w_dimensions.width / 2.9;
+        int btn_x = w_dimensions.width / 2.9;
+        int btn_width = 300;
 
         bounds = (Rectangle) {
+            btn_x,
+            btn_y,
             btn_width,
-            btn_height,
-            300,
-            80
+            btn_height
         };
     } 
 
@@ -59,14 +60,14 @@ Rectangle generate_std_btn_bounds(size_t btn_index, size_t screen_btn_count, Win
     // btn9    btn10   btn11   btrn12
     //
     else {
-        double gap_width = w_dimensions.width/15;
-        double btn_width = btn_index * w_dimensions.width / 6 + gap_width; 
+        int btn_width = 200;
+        int btn_x = btn_index * (w_dimensions.width -  btn_width)/ 6; 
 
         bounds = (Rectangle) {
+            btn_x,
+            btn_y,
             btn_width,
-            btn_height,
-            200,
-            80
+            btn_height
         };
     }
     return bounds;
@@ -117,7 +118,7 @@ void generate_btns(Button *out_buttons, ButtonSpec *specs, size_t count, bool is
     {
         for (int i = 0; i < count; i++)
         {
-            out_buttons[i] = generate_std_btn(specs[i], i, count, w_dimensions);
+            out_buttons[i] = generate_std_btn(specs[i], i + 1, count, w_dimensions); // i + 1, since it doesn't have a return button
         }
     } 
     else {
@@ -189,20 +190,20 @@ void draw_button(Button *b)
 
 // updates the screen
 // according to user input.
-Screen update_screen(Button **buttons, size_t b_length, Screen current_screen) {
+Screen update_screen(Button *buttons, size_t b_length, Screen current_screen) {
     for (int i = 0; i < b_length; i++)
     {
-        update_button_state(buttons[i]);
-        if (buttons[i]->state == BTN_ACTION)
+        update_button_state(&buttons[i]);
+        if (buttons[i].state == BTN_ACTION)
         {
-            if (buttons[i]->action.type == EXIT) 
+            if (buttons[i].action.type == EXIT) 
             {
-                *buttons[i]->action.data.exitRequested = true;
+                *buttons[i].action.data.exitRequested = true;
             }
 
             else 
             {
-                return buttons[i]->action.data.target_screen;
+                return buttons[i].action.data.target_screen;
             }
         }
     }

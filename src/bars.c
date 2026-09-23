@@ -43,12 +43,12 @@ Bar *init_bars(int count)
     return bars;
 }
 
-void draw_bars(int screen_width, int screen_height, Bar *bars, int count, int usable_width, int margin)
+void draw_bars(WindowDimensions w_dimensions, Bar *bars, int count, int usable_width, int margin)
 {
     for (int i = 0; i < count; i++)
     {
         int value = bars[i].value; // there was a +1 here
-        int bar_height = screen_height * 0.65 * value / count;
+        int bar_height = w_dimensions.height * 0.65 * value / count;
 
         // Calculate exact pixel boundaries for current and next bar
         int x_current = (i * usable_width / count) + margin/2;
@@ -62,12 +62,13 @@ void draw_bars(int screen_width, int screen_height, Bar *bars, int count, int us
 
         if (i == value - 1) bars[i].state = SETTLED;
 
+        int available_height = w_dimensions.height * 0.75;
         switch(bars[i].state) {
             case IDLE:
             {
                 DrawRectangle(
                     x_current,
-                    screen_height * 0.75 - bar_height,
+                    available_height - bar_height,
                     bar_width,
                     bar_height,
                     WHITE
@@ -78,7 +79,7 @@ void draw_bars(int screen_width, int screen_height, Bar *bars, int count, int us
             {
                 DrawRectangle(
                     x_current,
-                    screen_height * 0.75 - bar_height,
+                    available_height - bar_height,
                     bar_width,
                     bar_height,
                     YELLOW
@@ -89,7 +90,7 @@ void draw_bars(int screen_width, int screen_height, Bar *bars, int count, int us
             {
                 DrawRectangle(
                     x_current,
-                    screen_height * 0.75 - bar_height,
+                    available_height - bar_height,
                     bar_width,
                     bar_height,
                     RED
@@ -100,7 +101,7 @@ void draw_bars(int screen_width, int screen_height, Bar *bars, int count, int us
             {
                 DrawRectangle(
                     x_current,
-                    screen_height * 0.75 - bar_height,
+                    available_height - bar_height,
                     bar_width,
                     bar_height,
                     GREEN

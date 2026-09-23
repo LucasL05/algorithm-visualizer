@@ -19,6 +19,6 @@ typedef struct {
 int find_margin(int screen_width, int count);
 void fisher_yates_shuffle(Bar *bars, int count);
 Bar *init_bars(int count);
-void draw_bars(int screen_width, int screen_height, Bar *bars, int count, int usable_width, int margin);
+void draw_bars(WindowDimensions w_dimensions, Bar *bars, int count, int usable_width, int margin);
 
 #endif // BARS_H

@@ -216,13 +216,13 @@ void *quick_sort_r(void *sorter_data)
 }
 
 // sc = sorting screen
-void draw_sc(int screen_width, int screen_height, Bar *bars, int count, int usable_width, int margin, Button **buttons, size_t b_length) 
+void draw_sc(WindowDimensions w_dimensions, Bar *bars, int count, int usable_width, int margin, Button *buttons, size_t b_length) 
 {
-    draw_bars(screen_width, screen_height, bars, count, usable_width, margin);
+    draw_bars(w_dimensions, bars, count, usable_width, margin);
 
     for (int i = 0; i < b_length; i++)
     {
-        draw_button(buttons[i]);
+        draw_button(&buttons[i]);
     }
 
 }
