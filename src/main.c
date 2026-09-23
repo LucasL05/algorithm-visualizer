@@ -19,9 +19,13 @@ int main()
     // Initialize all required variables and load all required data here!
     const int screen_width = 900;
     const int screen_height = 600;
+    WindowDimensions w_dimensions = {screen_height, screen_width};
     const int count = 100;
+    bool exitWindowRequested = false;
+    bool exitWindow = false;
 
-        // Calculate margin and usable width
+
+    // Calculate margin and usable width
     int margin = find_margin(screen_width, count);
     int usable_width = screen_width - margin;
     assert(count * (1 + GAP) < usable_width && "ERROR: Too many bars for this window width.");
@@ -29,6 +33,7 @@ int main()
 
     srand(time(NULL));
     Bar *bars = init_bars(count);
+    
     
 
     //initializing a thread for recursive sorters ***Maybe I could organize this better later on.
@@ -41,7 +46,7 @@ int main()
     atomic_bool stop_requested;
     atomic_init(&stop_requested, false);
 
-    //organizing data to be sent to sorters.
+    // Organize data to be sent to sorters.
     SorterData sorter_data = {
         .bars = bars, 
         .length = count,
@@ -49,103 +54,78 @@ int main()
         .stop_requested = &stop_requested
     };
 
-    ButtonColors colors = {
-        .idle = LIGHTGRAY,
-        .hovered = GRAY,
-        .pressed = DARKGRAY
-    };
-
-    // Colors for the return buttons * <-- *
-    ButtonColors ret_btn_colors = {
-        .idle = WHITE,
-        .hovered = LIGHTGRAY,
-        .pressed = GRAY
-    };
-
-    // Use to return to main menu screen
-    Rectangle btn_mm_bounds = {screen_width / 80, screen_height / 60, 50, 25};
-    Button btn_mm = {
-        .bounds = btn_mm_bounds,
-        .state = BTN_IDLE,
-        .colors = ret_btn_colors,
-        .text = "<--",
-        .action = {
-            .type = CHANGE_SCREEN,
-            .data.target_screen = MAIN_MENU
-        }
-    };
-
-    // Initialize main menu's buttons
-    // Having a "initialize_main_menu()" umbrella function
-    // would make things much tidier, but then I'd need to
-    // use more heap memory, I think
-    Rectangle btn_sm_bounds = {screen_width / 2.9, screen_height / 3, 300, 80};
-    Button btn_sm = {
-        .bounds = btn_sm_bounds,
-        .state = BTN_IDLE,
-        .colors = colors,
-        .text = "Sorting Menu",
-        .action = {
+    // Initialize buttons
+    Button btns_main_menu[2];
+    ButtonSpec specs_main_menu[2];
+    specs_main_menu[0] = (ButtonSpec) 
+    {
+        .btn_action = 
+        {
             .type = CHANGE_SCREEN,
             .data.target_screen = SORTING_MENU
-        }
+        }, 
+        .btn_text = "Sorting Menu"
     };
-
-    bool exitWindowRequested = false;
-    Rectangle btn_ext_bounds = {screen_width / 2.9, screen_height / 1.92, 300, 80};
-    Button btn_ext = {
-        .bounds = btn_ext_bounds,
-        .state = BTN_IDLE,
-        .colors = colors,
-        .text = "Exit program",
-        .action = {
+    specs_main_menu[1] = (ButtonSpec) 
+    {
+        .btn_action =
+        {
             .type = EXIT,
             .data.exitRequested = &exitWindowRequested
-        }
+        },
+        .btn_text = "Leave Program"
     };
+    generate_btns(btns_main_menu, specs_main_menu, 2, true, w_dimensions);
 
-    Rectangle btn_ms_bounds = {screen_width / 2.9, screen_height / 3, 300, 80};
-    Button btn_ms = {
-        .bounds = btn_ms_bounds,
-        .state = BTN_IDLE,
-        .colors = colors,
-        .text = "Merge Sort",
-        .action = {
+    Button btns_sorting_menu[3];
+    ButtonSpec specs_sorting_menu[3];
+    specs_sorting_menu[1] = (ButtonSpec)
+    {
+        .btn_action =
+        {
+            .type = CHANGE_SCREEN,
+            .data.target_screen = MAIN_MENU
+        },
+        .btn_text = "<--"
+    };
+    specs_sorting_menu[1] = (ButtonSpec)
+    {
+        .btn_action =
+        {
             .type = CHANGE_SCREEN,
             .data.target_screen = MERGE_SORT
-        }
+        },
+        .btn_text = "Merge Sort"
     };
-
-    Rectangle btn_qs_bounds = {screen_width / 2.9, screen_height / 1.92, 300, 80};
-    Button btn_qs = {
-        .bounds = btn_qs_bounds,
-        .state = BTN_IDLE,
-        .colors = colors,
-        .text = "Quick sort",
-        .action = {
+    specs_sorting_menu[2] = (ButtonSpec)
+    {
+        .btn_action =
+        {
             .type = CHANGE_SCREEN,
             .data.target_screen = QUICK_SORT
-        }
+        },
+        .btn_text = "Quick Sort"
     };
+    generate_btns(btns_sorting_menu, specs_sorting_menu, 3, false, w_dimensions);
 
-    // Packing main menu buttons
-    Button *buttons_mm[2];
-    buttons_mm[0] = &btn_ext;
-    buttons_mm[1] = &btn_sm;
+    Button btns_sorting_screens[1];
+    ButtonSpec specs_sorting_screens[1];
+    specs_sorting_screens[0] = (ButtonSpec) 
+    {
+        .btn_action =
+        {
+            .type = CHANGE_SCREEN,
+            .data.target_screen = SORTING_MENU
+        },
+        .btn_text = "<--"
+    };
+    generate_btns(btns_sorting_screens, specs_sorting_screens, 1, false, w_dimensions);
 
-    // Packing sorting menu buttons
-    Button *buttons_sm[3];
-    buttons_sm[0] = &btn_mm;
-    buttons_sm[1] = &btn_ms;
-    buttons_sm[2] = &btn_qs;
-  
-    // Packing sorting screen buttons
-    Button *buttons_sc[1];
-    buttons_sc[0] = &btn_sm;
+    
+    
 
     InitWindow(screen_width, screen_height, "Alogrithm Visualizer");
     Screen current_screen = START;
-    bool exitWindow = false;
 
     // Main loop
     SetTargetFPS(60);
@@ -166,12 +146,12 @@ int main()
 
             case MAIN_MENU:
             {
-                current_screen = update_screen(buttons_mm, 2, MAIN_MENU);
+                current_screen = update_screen(&btns_main_menu, 2, MAIN_MENU);
             } break;
 
             case SORTING_MENU:
             {
-                current_screen = update_screen(buttons_sm, 3, SORTING_MENU);
+                current_screen = update_screen(&btns_sorting_menu, 3, SORTING_MENU);
             } break;
 
             case MERGE_SORT:
@@ -182,7 +162,7 @@ int main()
                     sorting = true;
                 } 
 
-                current_screen = update_screen(buttons_sc, 1, MERGE_SORT);
+                current_screen = update_screen(&btns_sorting_screens, 1, MERGE_SORT);
 
                 if (current_screen != MERGE_SORT) 
                 { 
@@ -200,7 +180,7 @@ int main()
                     sorting = true;
                 }
                 
-                current_screen = update_screen(buttons_sc, 1, QUICK_SORT);
+                current_screen = update_screen(btns_sorting_screens, 1, QUICK_SORT);
 
                 if (current_screen != QUICK_SORT) 
                 {
@@ -226,22 +206,22 @@ int main()
 
             case MAIN_MENU:
             {    // Maybe a union struct buttons and length would be better?
-                draw_menu(screen_width, screen_height, buttons_mm, 2, "Main Menu");
+                draw_menu(screen_width, screen_height, btns_main_menu, 2, "Main Menu");
             } break;
 
             case SORTING_MENU:
             {
-                draw_menu(screen_width, screen_height, buttons_sm, 3, "SORTING MENU");
+                draw_menu(screen_width, screen_height, btns_sorting_menu, 3, "SORTING MENU");
             } break;
             
             case MERGE_SORT:
             {   // Merge sort == quick sort. Maybe I should merge both in the future? Like draw_sorting.
-                draw_sc(screen_width, screen_height, bars, count, usable_width, margin, buttons_sc, 1);
+                draw_sc(screen_width, screen_height, bars, count, usable_width, margin, btns_sorting_screens, 1);
             } break;
 
             case QUICK_SORT:
             {
-                draw_sc(screen_width, screen_height, bars, count, usable_width, margin, buttons_sc, 1);
+                draw_sc(screen_width, screen_height, bars, count, usable_width, margin, btns_sorting_screens, 1);
             } break;
         }
 

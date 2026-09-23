@@ -7,7 +7,7 @@
 // s_height -> screen height
 void draw_menu(int s_width, int s_height, Button **buttons, size_t b_length, char text[]) 
 {
-    // Draw main menu texts
+    // Draw menu title
     DrawText(text, s_width/3.5, s_height/20, 80, RAYWHITE);
 
     // Draw main menu buttons

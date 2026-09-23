@@ -64,7 +64,7 @@ typedef struct {
 // this struct is used to generate buttons
 typedef struct {
     Action btn_action;
-    char *btn_text;
+    const char *btn_text;
 } ButtonSpec;
 
 typedef enum {
@@ -84,7 +84,7 @@ typedef struct {
     Rectangle bounds;
     ButtonState state;
     ButtonColors colors;
-    const char text[];
+    const char *text;
     Action action;
 } Button;
 
