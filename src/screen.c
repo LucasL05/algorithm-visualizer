@@ -2,6 +2,60 @@
 #include <stdlib.h>
 
 #include "config.h"
+Rectangle generate_btn_bounds(size_t btn_index, size_t screen_btn_count, size_t screen, WindowDimensions w_dms)
+{
+    if (screen_btn_count <= 3)
+    {
+        Rectangle b = {
+            w_dms.width / 2.9,
+            w_dms.height / 3,
+            300,
+            80
+        }; // Adapt this to btn_index and screen_btn_count
+    }
+}
+    Rectangle btn_sm_bounds = {screen_width / 2.9, screen_height / 3, 300, 80};
+// generates a standard button with the given specs
+Button generate_btn(Rectangle bounds, ButtonSpec specs, Screen current_screen, ButtonColors colors)
+{
+    Button b = {
+        .bounds = bounds,
+        .state = BTN_IDLE,
+        .colors = colors,
+        .text = specs->text,
+        .action = specs->action
+    };
+    return b;
+}
+
+// Reads 'count' specs and writes 'count' buttons into out_buttons.
+// out_buttons must be pre-allocated with space for at least 'count' buttons.
+//
+// - 'count' must be <= 12;
+// - If you'd like more buttons, creating a second screen is recommended.
+// 
+// NOTE: All buttons belonging to the same screen must be generated together.
+// NOTE: buttons with text "<--" will be generated in the screen's left upper corner
+void generate_btns(Button *out_buttons, ButtonSpec *specs, size_t count, Screen current_screen, WindowDimensions w_dms)
+{
+    // Colors for return buttons * <-- *
+    ButtonColors colors_rtrn = {
+        .idle = WHITE,
+        .hovered = LIGHTGRAY,
+        .pressed = GRAY
+    };
+
+    // main menu is the only screen that doesn't have a return button,
+    // so it needs a different approach.
+    if (current_screen == MAIN_MENU)
+    {
+
+    }
+    for (int i = 0; i < count; i++) 
+    {
+        Rectangle bounds = generate
+    }
+}
 
 // updates *b*'s state
 // according to current user input
