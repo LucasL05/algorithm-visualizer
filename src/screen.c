@@ -32,11 +32,11 @@ Button generate_ret_button(ButtonSpec specs, WindowDimensions w_dimensions)
 
 Rectangle generate_std_btn_bounds(size_t btn_index, size_t screen_btn_count, WindowDimensions w_dimensions)
 {
-
     Rectangle bounds;
+    int available_height = w_dimensions.height * 0.90;
     // The other 5% are occupied by the title. 
     int btn_height = 80;
-    int btn_y = btn_index * (w_dimensions.height - btn_height) / 3;
+    int btn_y = btn_index * (available_height - btn_height) / 3;
 
     // Position buttons in a single, centralized column.
     if (screen_btn_count <= 3)
@@ -126,7 +126,7 @@ void generate_btns(Button *out_buttons, ButtonSpec *specs, size_t count, bool is
         // i = 1 because index 0 is already defined as the return button
         for (int i = 1; i < count; i++) 
         {
-            out_buttons[i] = generate_std_btn(specs[i], i, count, w_dimensions);
+            out_buttons[i] = generate_std_btn(specs[i], i, count - 1, w_dimensions);
         }
     }
 }

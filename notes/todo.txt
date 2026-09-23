@@ -1,12 +1,12 @@
 TODO next:
 
-- Improve user menu;
 - Add Heapsort;
 - Add bubble sort;
 - Enable full screen option;
 - Add a teaching tab (it can totally be just a simpe pseudocode of the selected algorithm for now);
 - Introduce data structures?
 - Introduce greedy algorithms?
+- Add Counting sort, bucket sort and insertion sort(chapter 8);
 
 
 TODO eventually:
@@ -15,10 +15,12 @@ TODO eventually:
 compared, but the visualizer usually skips that part and turn them red straight up. This isn't important for big bar arrays though,
 since that would make their sorting process too slow and tedious;
 
-- I'd like the return to last screen feature to be quicker.
+- I'd like the return to last screen feature to be quicker;
 
 - It seems like it'd be possible to implement a generate_button fn that would take a list of tuples and its length and would return a list of 
 buttons' addresses. The first item in the tuple should be the current screen and the other a target screen or an action. If the target screen's Enum value
 is smaller than the current screen's value, then the button should be shaped as a return button. If not, it should be initialized following the defined pattern.
 Since the function would receive the amount of buttons as an input, it should also set their position on the screen with ease. But I'd have to use heap memory.
-Would it be worth it? -> Just pass a list as a parameter to generate_button populate
+Would it be worth it? -> Just pass a list as a parameter to generate_button populate;
+
+- Change bar's length to bar's count in sorter functions.

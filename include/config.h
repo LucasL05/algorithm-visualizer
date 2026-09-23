@@ -45,7 +45,8 @@ typedef enum {
     MAIN_MENU,
     SORTING_MENU, 
     MERGE_SORT, 
-    QUICK_SORT
+    QUICK_SORT,
+    HEAP_SORT
 } Screen;
 
 typedef enum {

@@ -215,6 +215,18 @@ void *quick_sort_r(void *sorter_data)
 
 }
 
+void *heap_sort(void *sorter_data)
+{
+    SorterData *data = (SorterData *) sorter_data;
+    Bar *bars = data->bars;
+    int bars_length = data->length;
+    pthread_mutex_t *lock = data->lock;
+    int delay = 1500 / bars_length; // In milisseconds
+    atomic_bool *stop_requested = data->stop_requested;
+    
+    return NULL;
+}
+
 // sc = sorting screen
 void draw_sc(WindowDimensions w_dimensions, Bar *bars, int count, int usable_width, int margin, Button *buttons, size_t b_length) 
 {

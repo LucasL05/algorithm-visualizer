@@ -77,8 +77,8 @@ int main()
     };
     generate_btns(btns_main_menu, specs_main_menu, 2, true, w_dimensions);
 
-    Button btns_sorting_menu[3];
-    ButtonSpec specs_sorting_menu[3];
+    Button btns_sorting_menu[4];
+    ButtonSpec specs_sorting_menu[4];
     specs_sorting_menu[0] = (ButtonSpec)
     {
         .btn_action =
@@ -106,7 +106,16 @@ int main()
         },
         .btn_text = "Quick Sort"
     };
-    generate_btns(btns_sorting_menu, specs_sorting_menu, 3, false, w_dimensions);
+    specs_sorting_menu[3] = (ButtonSpec)
+    {
+        .btn_action =
+        {
+            .type = CHANGE_SCREEN,
+            .data.target_screen = HEAP_SORT
+        },
+        .btn_text = "Heap Sort"
+    };
+    generate_btns(btns_sorting_menu, specs_sorting_menu, 4, false, w_dimensions);
 
     Button btns_sorting_screens[1];
     ButtonSpec specs_sorting_screens[1];
@@ -151,7 +160,7 @@ int main()
 
             case SORTING_MENU:
             {
-                current_screen = update_screen(btns_sorting_menu, 3, SORTING_MENU);
+                current_screen = update_screen(btns_sorting_menu, 4, SORTING_MENU);
             } break;
 
             case MERGE_SORT:
@@ -186,8 +195,12 @@ int main()
                 {
                     stop_sorting(r_sort, &stop_requested, bars, count);
                     sorting = false;
-                }
-                
+                } 
+            } break;
+
+            case HEAP_SORT:
+            {
+                current_screen = update_screen(btns_sorting_screens, 1, HEAP_SORT);
             } break;
         }
 
@@ -211,7 +224,7 @@ int main()
 
             case SORTING_MENU:
             {
-                draw_menu(w_dimensions, btns_sorting_menu, 3, "SORTING MENU");
+                draw_menu(w_dimensions, btns_sorting_menu, 4, "SORTING MENU");
             } break;
             
             case MERGE_SORT:
@@ -222,6 +235,11 @@ int main()
             case QUICK_SORT:
             {
                 draw_sc(w_dimensions, bars, count, usable_width, margin, btns_sorting_screens, 1);
+            } break;
+
+            case HEAP_SORT:
+            {
+
             } break;
         }
 
