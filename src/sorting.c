@@ -207,12 +207,85 @@ void *quick_sort_r(void *sorter_data)
     Bar *bars = data->bars;
     int bars_length = data->length;
     pthread_mutex_t *lock = data->lock;
-    int delay = 1500 / bars_length; // In milisseconds
+    int delay = 1500 / bars_length; // In milliseconds
     atomic_bool *stop_requested = data->stop_requested;
 
     quick_sort_r_recursive(bars, 0, bars_length - 1, lock, delay, stop_requested);
     return NULL;
 
+}
+
+void heapify_max(Bar *bars, int bars_length, int parent_index, pthread_mutex_t *lock, int delay, atomic_bool *stop_requested)
+{
+    if (atomic_load(stop_requested)) return;
+
+    int left_child_index = parent_index * 2 + 1;
+    int right_child_index = parent_index * 2 + 2;
+    int largest = parent_index;
+
+    pthread_mutex_lock(lock);
+    bars[left_child_index].state = COMPARED;
+    bars[largest].state = COMPARED;
+    pthread_mutex_unlock(lock);
+    if (!atomic_load(stop_requested)) delay_ms(delay);
+    
+    if (left_child_index < bars_length && bars[left_child_index].value > bars[largest].value)
+    {
+        largest = left_child_index;
+    }
+
+    pthread_mutex_lock(lock);
+    bars[right_child_index].state = COMPARED;
+    bars[largest].state = COMPARED;
+    pthread_mutex_unlock(lock);
+    if (!atomic_load(stop_requested)) delay_ms(delay);
+
+    if (right_child_index < bars_length && bars[right_child_index].value > bars[largest].value)
+    {
+        largest = right_child_index;
+    }
+
+    if (largest != parent_index)
+    {
+        pthread_mutex_lock(lock);
+        Bar temp = bars[parent_index];
+        bars[parent_index] = bars[largest];
+        bars[largest] = temp;
+        bars[parent_index].state = MOVED;
+        bars[largest].state = MOVED;
+        pthread_mutex_unlock(lock);
+        if (!atomic_load(stop_requested)) delay_ms(delay);
+
+        heapify_max(bars, bars_length, largest, lock, delay, stop_requested);
+    }
+}
+void build_max_heap(Bar *bars, int bars_length, pthread_mutex_t *lock, int delay, atomic_bool *stop_requested)
+{
+    for (int i = bars_length / 2; i >= 0; i--)
+    {
+        if (atomic_load(stop_requested)) return;
+
+        heapify_max(bars, bars_length, i, lock, delay, stop_requested);
+    }
+}
+
+void hp_sort(Bar *bars, int bars_length, pthread_mutex_t *lock, int delay, atomic_bool *stop_requested)
+{
+    build_max_heap(bars, bars_length, lock, delay, stop_requested);
+    for (int i = bars_length - 1; i > 0; i--)
+    {
+        if (atomic_load(stop_requested)) return;
+
+        pthread_mutex_lock(lock);
+        Bar temp = bars[0];
+        bars[0] = bars[i];
+        bars[i] = temp;
+        bars[0].state = MOVED;
+        bars[i].state = MOVED;
+        pthread_mutex_unlock(lock);
+        if (!atomic_load(stop_requested)) delay_ms(delay);
+        heapify_max(bars, i, 0, lock, delay, stop_requested);
+    }
 }
 
 void *heap_sort(void *sorter_data)
@@ -221,9 +294,9 @@ void *heap_sort(void *sorter_data)
     Bar *bars = data->bars;
     int bars_length = data->length;
     pthread_mutex_t *lock = data->lock;
-    int delay = 1500 / bars_length; // In milisseconds
+    int delay = 1500 / bars_length; // In milliseconds
     atomic_bool *stop_requested = data->stop_requested;
-    
+    hp_sort(bars, bars_length, lock, delay, stop_requested);
     return NULL;
 }
 

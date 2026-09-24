@@ -20,7 +20,7 @@ int main()
     const int screen_width = 900;
     const int screen_height = 600;
     WindowDimensions w_dimensions = {screen_height, screen_width};
-    const int count = 100;
+    const int count = 60;
     bool exitWindowRequested = false;
     bool exitWindow = false;
 
@@ -200,7 +200,19 @@ int main()
 
             case HEAP_SORT:
             {
+                if (!sorting) 
+                {
+                    pthread_create(&r_sort, NULL, heap_sort, &sorter_data);
+                    sorting = true;
+                }
+                
                 current_screen = update_screen(btns_sorting_screens, 1, HEAP_SORT);
+
+                if (current_screen != HEAP_SORT) 
+                {
+                    stop_sorting(r_sort, &stop_requested, bars, count);
+                    sorting = false;
+                } 
             } break;
         }
 
@@ -239,7 +251,7 @@ int main()
 
             case HEAP_SORT:
             {
-
+                draw_sc(w_dimensions, bars, count, usable_width, margin, btns_sorting_screens, 1);
             } break;
         }
 
